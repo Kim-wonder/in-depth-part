@@ -1,0 +1,70 @@
+// pages/Home.jsx
+import React, { useCallback } from 'react';
+import styled from "styled-components";
+import Modal from "./components/Add";
+
+const Home = () => {
+  const [isOpenModal, setOpenModal] = useState<boolean>(false);
+
+  const onClickModal = useCallback(() => {
+    setOpenModal(!isOpenModal);
+  }, [isOpenModal]);
+  
+  return (
+    <Layout>
+      <Header>
+        <h1>Food Comunity</h1>
+        {isOpenModal && (
+        <Modal onClickModal={onClickModal}>
+          모달창이 열렸습니다~!
+        </Modal>
+        )}
+        <button onClick={onClickModal}>Add</button>
+      </Header>
+
+      <List>
+        <Card>
+          <div>
+            <Image>이미지</Image>
+            <div>작성일.시.분</div>
+            <div>제목</div>
+            <div>내용</div>
+            <button>삭제</button>
+          </div>
+        </Card>
+
+      </List>
+    </Layout>
+    
+
+  )
+}
+
+const Layout = styled.div`
+  background-color: #f8e9e9;
+`;
+const Header = styled.div`
+  background-color: #fcd1d1;
+  display: flex;
+`;
+const List = styled.div`
+  background-color: #fca6a6;
+  display: flex;
+`;
+const Card = styled.div`
+  background-color: #fa8686;
+  width: 200px;
+  height: 280px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+const Image = styled.div`
+  background-color: #d3d3d3;
+  width: 170px;
+  height: 170px;
+
+`;
+
+
+export default Home;

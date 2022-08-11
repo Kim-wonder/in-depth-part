@@ -1,0 +1,104 @@
+🍅 Node환경세팅 관련 명령어 모음
+
+🔴 nvm ( node version manager )
+    : node.js의 버전 관리자
+
+    nvm 버전 : nvm --version
+    nvm 설치 : nvm install [설치할버전]
+    node 버전 목록 : nvm ls
+    node 버전 : node -v
+    사용중인 노드버전을 바꾸고싶을때: nvm use [사용할 노드 버전]
+🔴 npm ( node package manager )
+    : 누가 만들어놓은 패키지를 쓸수 있게해줌, 노드 설치하면 함께 설치된다.
+
+🔴 yarn
+    npm대신 yarn도 쓸 수 있다. 패키지 설치를 필요로 한다.
+
+    yarn 설치 : npm install -g yarn
+    yarn으로 패키지 설치 명령: yarn add [옵션][설치할 패키지 이름]
+
+
+
+🥝 React패키지 설치 관련 명령어 모음
+
+🟢 리액트 개발환경 구축
+    프로젝트 설치 : yarn create react-app "프로젝트 명"
+    프로젝트 실행 : yarn start
+🟢 페이지간 이동
+    라우터 패키지 설치 : yarn add react-router-dom
+🟢 리덕스로 상태관리
+    리덕스 패키지 설치 : yarn add redux react-redux
+    리덕스 정크 설치 : yarn add redux-thunk
+🟢 리액트 스타일링을 위한
+    스타일드컴포넌트 설치 : yarn add styled-components
+    머테리얼유아이 설치: yarn add @material-ui/core @material-ui/icons
+
+
+
+🍋 패키지 설치 명령어 모음
+
+🟡 리덕스 툴킷
+    yarn add react-redux @reduxjs/toolkit
+🟡 json-server
+    제이슨 서버 설치 : yarn add json-server
+    제이슨 서버 시작 : yarn json-server --watch db.json --port 3001
+    제이슨 db 확인 : http://localhost:3001/todos #todos 대신 db에 들어있는 GET 명칭을 넣으면 된다.
+🟡 json-server에서 Axios 설치
+    yarn add axios
+🟡 
+
+
+
+🍆 배포
+
+🟣 프로젝트 최상위에 server 폴더 생성, 그 안에 index.js 생성 후 코드 붙여넣기
+    const jsonServer = require("json-server");
+    const path = require("path");
+
+    const server = jsonServer.create();
+    const router = jsonServer.router(path.resolve(__dirname + "/db.json"));
+    const middlewares = jsonServer.defaults({
+    static: path.resolve(__dirname + "/../build/"),
+    });
+
+    const port = process.env.PORT || 3001;
+
+    server.use(middlewares);
+
+    server.use(jsonServer.bodyParser);
+
+    server.use(router);
+    server.listen(port, () => {
+    console.log("JSON Server is running");
+    });
+🟣 같은 server 폴더 안에 db.json 생성 후 아래 코드 삽입
+    {
+    "todos": [
+
+    ]
+    }
+🟣 cross-env 설치하기
+    yarn add cross-env
+🟣 package.json 수정하기
+// 원래코드
+    "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+    },
+
+// 변경코드
+"scripts": {
+    "start": "node server",
+    "start:dev": "cross-env NODE_PATH=src react-scripts start",
+    "build": "cross-env NODE_PATH=src react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "heroku-postbuild": "cross-env NODE_PATH=src npm run build"
+},
+
+
+
+
+

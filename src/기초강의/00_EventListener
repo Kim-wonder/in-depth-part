@@ -1,0 +1,214 @@
+
+EventListener
+
+Event란
+사용자가 어떤 행동(onClick, mouseover...)을 했을 때 나타나는 것.
+
+EventListener란 (사용이유)
+사용가자 Event를 발생시키면 그에 맞는 행동(배경색 변경, 숫자올리기...)을
+보여줘야 하므로 언제 사용자가 이벤트를 발생시키는지 확인 하는 것.
+
+1주차에 배운
+getElementBy~.addEventListener
+
+이벤트리스너를 쓰려면
+1) 어디에 이벤트 리스너를 붙일건지 정하기 (getElementBy~)
+2) 이벤트 리스너 붙이기 (addEventListener)
+
+
+그러면 리액트에서는 어떻게 이벤트리스너를 쓸까?
+
+(클래스형)
+import logo from './logo.svg';
+import './App.css';
+import React from "react";
+import Text from "./Text";
+
+class App extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {};
+        this.circle = React.createRef(null);
+    }
+
+    componentDidMount(){ ;이벤트 리스너를 붙이려면 DOM 요소까지 완성되어있어야 한다.
+        console.log(this.circle);이벤트리스너 잘붙었나
+        ; 이벤트 잘붙은거 확인했으면 이벤트리스너 붙여주기 (어떤이벤트, 어떤 행동할게)
+        this.circle.current.addEventListener("mouseover", this.hoverEvent);
+    }
+
+    componentWillUnmount() {
+
+    }
+
+    render() {
+        return (
+        <div style={{width: "100vw", height:"100vh", textAlign:"center"}}>
+            <Text/>
+            <div style={{margin:"auto", width: "250px", height: "250px", 
+            background:"green", borderRadius:"250px"}} ref={this.circle}></div>
+            
+        </div>
+        );
+    }
+}
+
+export default App;
+
+
+(함수형)
+import React from "react";
+
+const Text = (props) => {
+    const text = React.useRef(null);
+
+    React.useEffect(() => {
+
+    }, []);
+    return (
+        <h1 ref={text}>텍스트입니다!</h1>
+    )
+}
+
+export default Text;
+
+
+
+
+🟡(클래스형 컴포넌트에서 event listener 구독하기)
+    ⚪️ 어디에 이벤트 리스너를 붙일건지 정하기
+        클릭을 하건, 마우스를 올리건 DOM 요소가 있어야 이벤트가 발생하는 지 지켜볼 수 있다.
+        => componentDidMount()에 넣어주면 됩니다.
+
+        🔲 어떤 행동(=이벤트 발생!) 뒤에 실행할 함수 먼저 만들어요.
+        ; App.js
+        hoverEvent = (e) => {
+            ; 콘솔로 이 이벤트가 누구에게서 일어났는 지 확인할 수 있습니다.
+            console.log(e.target);
+            ; ref랑 같은 녀석인 지 확인해봐요!
+            console.log(this.circle.current);
+
+            this.circle.current.style.background = "yellow";
+        }
+
+
+    ⚪️ 이벤트 리스너 붙이기 
+        🔲 이제 addEventListener()를 이용해서 이벤트를 등록합니다.
+
+        class App extends React.Component{
+            constructor(props){
+                super(props);
+
+                this.state = {};
+                this.circle = React.createRef(null);
+            }
+
+            componentDidMount(){ ;이벤트 리스너를 붙이려면 DOM 요소까지 완성되어있어야 한다.
+                console.log(this.circle);이벤트리스너 잘붙었나
+                ; 이벤트 잘붙은거 확인했으면 이벤트리스너 붙여주기 (어떤이벤트, 어떤 행동할게)
+                this.circle.current.addEventListener("mouseover", this.hoverEvent);
+            }
+
+            componentWillUnmount() {
+
+            }
+
+            render(){...}
+
+
+        🔲 이벤트는 꼭 컴포넌트가 사라지면 지워주세요!
+        이 과정을 clean up 이라고 불러요. 이벤트는 한번 등록되면 계속 남아있거든요!
+        그런데 컴포넌트가 사라지면요? 이벤트가 실행되지는 않겠지만, 남아는 있을거예요. 😢 
+        그러니 깨끗하게 정돈해주는 과정이 필요합니다! 그게 clean up이고요!
+
+        ;App.js
+        componentWillUnmount() { ;컴포넌트가 사라질 때
+            this.circle.current.removeEventListener("mouseover", this.hoverEvent);
+        }
+
+
+
+
+🟡(함수형 컴포넌트에서 event listener 구독하기)
+⚪️ useEffect()
+useEffect()는 리액트 훅.
+라이프 사이클 함수 중 componentDidMount와 componentDidUpdate, componentWillUnmount를 합쳐둔 거
+
+	; 첫번째 인자는 익숙하죠! 화살표 함수! 넵, 렌더링 시 실행할 함수가 여기에 들어갑니다.
+    ; 두번째 인자의 []! 디펜던시 어레이라고 불러요. 여기 넣어준 값이 변하면 첫번째 인자인 콜백함수를 실행합니다.
+    React.useEffect(() => {
+    ; 여기가 rendering 때 실행될 구문이 들어가는 부분입니다.
+    ; componentDidMount, componentDidUpdate일 때 동작하는 부분이 여기예요.
+    ; do something ...
+
+        return () => {
+            ;여기가 clean up 부분입니다.
+            ;componentWillUnmount 때 동작하는 부분이 여기예요.
+            ;do something ...
+        };
+    }, []);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

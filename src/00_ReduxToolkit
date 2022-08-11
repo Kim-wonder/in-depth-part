@@ -1,0 +1,513 @@
+
+🟡 리덕스 툴킷이란?
+
+툴킷 설치하기
+yarn add react-redux @reduxjs/toolkit
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+// 일반 리덕스 예시 코드
+
+// Action Value
+const ADD_NUMBER = "ADD_NUMBER";
+const MINUS_NUMBER = "MINUS_NUMBER";
+
+// Action Creator
+export const addNumber = (payload) => {
+return {
+    type: ADD_NUMBER,
+    payload,
+};
+};
+
+export const minusNumber = (payload) => {
+return {
+    type: MINUS_NUMBER,
+    payload,
+};
+};
+
+// Initial State
+const initialState = {
+number: 0,
+};
+
+// Reducer
+const counter = (state = initialState, action) => {
+switch (action.type) {
+    case ADD_NUMBER:
+    return {
+        number: state.number + action.payload,
+    };
+    // [퀴즈 답]
+    case MINUS_NUMBER:
+    return {
+        number: state.number - action.payload,
+    };
+    default:
+    return state;
+}
+};
+
+// export default reducer
+export default counter;
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+일반 리덕스를 사용했을보다 리덕스 툴킷을 사용해서 만든 counter 프로그램이확실히 코드의 양이 줄었습니다. 
+
+자세히 보면 Action Value와 Action Creator를 이제 직접 생성해주지 않고, 
+Action Value, Action Creator, Reducer가 하나로 합쳐졌다는 걸 알 수 있습니다.
+
+이제 우리는 Slice 라는 API를 사용합니다. 
+이 슬라이스를 사용하면, 저 3개를 각각 만들어줄 필요 없이 한번에 3개가 모두 만들어집니다.
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+// 툴킷 적용 코드
+
+// src/redux/modules/counterSlice.js
+
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+    number: 0,
+};
+
+const counterSlice = createSlice({
+    name: "counter",
+    initialState,
+    reducers: {
+    addNumber: (state, action) => {
+        state.number = state.number + action.payload;
+    },
+
+    minusNumber: (state, action) => {
+        state.number = state.number - action.payload;
+    },
+    },
+});
+
+// 액션크리에이터는 컴포넌트에서 사용하기 위해 export 하고
+export const { addNumber, minusNumber } = counterSlice.actions;
+// reducer 는 configStore에 등록하기 위해 export default 합니다.
+export default counterSlice.reducer;
+
+
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+
+
+//createSlice API 뼈대
+
+const counterSlice = createSlice({
+	name: '', // 이 모듈의 이름
+	initialState : {}, // 이 모듈의 초기상태 값
+	reducers : {}, // 이 모듈의 Reducer 로직
+})
+
+
+
+신기한 것은 위의 counterSlice 리듀서 객체 안에서 만들어주는 함수가 
+리듀서의 로직이 되면서도 동시에 Action Creator가 된다는 점
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+// counterSlice.js의 Slice 구조
+
+const counterSlice = createSlice({
+  name: "counter",
+  initialState,
+  reducers: {
+    // 리듀서 안에서 만든 함수 자체가 리듀서의 로직이자, 액션크리에이터가 된다.
+    addNumber: (state, action) => {
+      state.number = state.number + action.payload;
+    },
+
+    minusNumber: (state, action) => {
+      state.number = state.number - action.payload;
+    },
+  },
+});
+
+
+우리가 일반 리덕스에서 export를 통해서 각각의 Action Creator를 내보내주었던 것을 아래 코드를 작성하면 똑같이 내보낼 수 있습니다. 
+그래서 리듀서에 로직을 추가할 때마다 함수를 추가해서 내보내주면 됩니다. 
+
+
+// 액션크리에이터는 컴포넌트에서 사용하기 위해 export 하고
+export const { addNumber, minusNumber } = counterSlice.actions;
+// reducer 는 configStore에 등록하기 위해 export default 합니다.
+export default counterSlice.reducer;
+
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+
+configStore 비교
+
+🔹 일반 리덕스
+
+// 일반 리덕스 combineReducers 예시 코드
+
+import { createStore } from "redux";
+import { combineReducers } from "redux";
+import counter from "../modules/counter";
+
+const rootReducer = combineReducers({
+  counter,
+});
+const store = createStore(rootReducer);
+export default store;
+
+
+🔹 리덕스 툴킷
+configStore에서도 아래와 같이 작성하면 되며, 크게 달라지는 점은 없습니다. 
+todos  모듈 코드를 아래에 제공해드릴테니, 모듈을 추가해서 아래 코드처럼 여러개의 모듈을 store에 등록해보세요.
+
+// src/redux/modules/config/configStore.js
+
+import { configureStore } from "@reduxjs/toolkit";
+/**
+ * import 해온 것은 slice.reducer 입니다.
+ */
+import counter from "../modules/counterSlice";
+import todos from "../modules/todosSlice";
+
+/**
+ * 모듈(Slice)이 여러개인 경우
+ * 추가할때마다 reducer 안에 각 모듈의 slice.reducer를 추가해줘야 합니다.
+ *
+ * 아래 예시는 하나의 프로젝트 안에서 counter 기능과 todos 기능이 모두 있고,
+ * 이것을 각각 모듈로 구현한 다음에 아래 코드로 2개의 모듈을 스토어에 연결해준 것 입니다.
+ */
+const store = configureStore({
+  reducer: { counter: counter, todos: todos },
+});
+
+export default store;
+
+
+todos 모듈
+
+// src/redux/modules/todosSlice.js
+
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = {
+  todos: [],
+};
+
+const todosSlice = createSlice({
+  name: "todos",
+  initialState,
+  reducers: {},
+});
+
+export const {} = todosSlice.actions;
+export default todosSlice.reducer;
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+이렇게 생성한 store를 export default 해서 최상위의 index.js Provider에 주입해주는 것은 전혀 바뀐게 없습니다.
+
+// index.js
+
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import { Provider } from "react-redux";
+import store from "./redux/config/configStore";
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+);
+
+
+App.jsx에서는 툴킷을 사용해서 만든 모듈을 조회할 수 있습니다. 방식은 일반리덕스를 사용했을 때와 동일합니다. 
+아래 코드를 작성하여, 리덕스 모듈들이 잘 연결되었는지 확인해봅시다.
+
+// src/App.js
+
+import React from "react";
+import { useSelector } from "react-redux";
+
+const App = () => {
+  // Store에 있는 todos 모듈 state 조회하기
+  const todos = useSelector((state) => state.todos);
+
+  // Store에 있는 counter 모듈 state 조회하기
+  const counter = useSelector((state) => state.counter);
+
+  return <div>App</div>;
+};
+
+export default App;
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+
+modules안에 있는 파일의 이름은 임의로 하시면 됩니다.  
+counter.js, todos.js로 하는 개발자도 있고, counterSlice.js, todosSlice.js로 하는 개발자도 있습니다.
+
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+Redux Devtools 사용하기
+
+devtools 소개
+
+**리덕스를 사용하면, 리덕스 devtools를 사용할 수 있습니다.**
+
+다른 패키지에서는 찾아볼 수 없는 굉장히 강력한 개발툴입니다. 
+현재 프로젝트의 state 상태라던가, 어떤 액션이 일어났을 때 그 액션이 무엇이고, 
+그것으로 인해 state가 어떻게 변경되었는지 등 리덕스를 사용하여 개발할 때 아주 편리하게 사용할 수 있습니다.
+
+
+🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸 - 🔸
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

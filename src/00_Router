@@ -1,0 +1,260 @@
+
+SPA = Single Page Application
+
+왜 굳이 싱글페이지로 만들어야 할까? (html을 하나만줄까?)
+
+많은 이유가 있지만, 그 중 제일 중요한건 * 사용성 * 때문
+페이지를 이동할때마다, 서버에서 주는 html로 화면을 바꾸다보면 상태 유지가 어렵고, 
+바뀌지 않은 부분까지 새로 불러오니까 비효율적이다.
+사용자가 회원가입하다가 적었던 내용이 날아갈 수도 있고, 
+블로그 같은 경우 페이지마다 새로 html을 받아오면 바뀐건 글 뿐인데
+헤더와 카테고리까지 전부 다시 불러와야 함
+
+단점
+    딱 한번 정적자원을 내려받다보니, 처음에 모든 컴포넌트를 받아옴.
+
+
+
+라우팅 : 현재페이지에서 일부분만 이동하는것
+    브라우저 주소에 따라 다른 페이지를 보여주는 것.
+    쉽게 이야기해서, 페이지를 이동하는걸 라우팅이라고 한다.
+
+🥔 라우터 적용하기
+package 설치
++ yarn add react-router-dom
+
+index.js
+1. 브라우저라우터돔 불러오기 : import {BrowserRouter} from "react-router-dom";를 임포트
+2. <APP/>를 <BrouserRouter>로 감싸준다.
+
+App.js
+1. 라우터돔 불러오기 : import { Route } from 'react-router-dom';을 임포트
+2. 컴포넌트 불러오기 : Home, Cat, Dog라는 컴포넌트를 만들고, 임포트
+    import Home from "./Home";
+    import Cat from "./Cat";
+    import Dog from "./Dog";
+3. 렌더의 리턴안에 <div className="APP">안에 
+    <Route exact path="/" component={Home}/>
+    <Route path="/cat/:cat_name" component={Cat}/>
+    <Route path="/dog" component={Dog}/>
+넣어주기! path는 주소[경로이름], exact는 중복주소처리!
+
+
+🥔 <Link/> 로 이동하는 법
+App.js
+1. 라우터 돔에 Link추가 : import { Route, Link } from 'react-router-dom';
+2. <div className="APP"> 안에 <div/>를 하나만 들고 그 안에
+    <Link to="/">홈으로가기</Link>
+    <Link to="/cat/nabi">Cat으로 가기</Link>
+    <Link to="/cat/nabi">Dog으로 가기</Link>
+넣어주기!
+
+
+🥔 history객체로 이동하는 법
+App.js
+
+1. import { withRouter } from "react-router";가지고 오기
+2. 클릭하면 특정페이지로 가는 버튼만들기
+    <button onClick={()=>{ this.props.history.push('/cat/nabi'); }}>/cat으로 가기</button>
+3. 클릭하면 뒤로가는 버튼만들기
+    <button onClick={()=>{ this.props.history.goBack() }}>뒤로가기</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,600 @@
+
+Axios
+
+🧶 Axios란?
+node.js와 브라우저를 위한 Promise 기반 http 비동기 통신 라이브러리.
+쉽게 말해서 백엔드랑 프론트엔드랑 통신을 쉽게하기 위해 Ajax와 더불어 사용한다
+http를 이용해서 서버와 통신하기 위해 사용하는 패키지
+
+
+🧶 Axios 설치하기
+yarn add axios
+
+
+🧶 json-server 설정
+API 서버는 우리가 만든 json-server를 사용합니다. 
+배포는 하지 않아도 되고, 한 프로젝트 내에서 3001 포트로 서버를 가동시켜 사용합니다.
+
+-테스트용 db.json 설정
+{
+    "todos": [
+        {
+        "id": "1",
+        "title": "react"
+        }
+    ]
+}
+
+🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹
+
+🧶 GET
+(1) Axios get : get은 서버의 데이터를 조회할 때 사용합니다.
+
+// url에는 서버의 url이 들어가고, config에는 기타 여러가지 설정을 추가할 수 있습니다.
+// config는 axios 공식문서에서 확인하세요.
+
+axios.get(url[, config]) // GET
+
+(2) 우리가 사용하는 json-server API 명세서 확인하기 [중요 🔥🔥🔥🔥]
+우리가 Axios를 사용해서 GET 요청 코드를 작성하기에 앞서, 어떤 방식으로 요청 해야할지는 
+우리가 사용하는 json-server의 방식을 알아보아야 합니다.
+
+Axios는 GET 요청을 할 수 있도록 도와주는 패키지일뿐, 
+“어떻게 요청을 해야하지?” 와 같은 방식에 대한 확인은 
+우리가 사용할 API 명세서를 보아야 한다는 뜻 입니다. 
+예를 들어 GET 요청을 할 때 path variable로 해야할지, 
+query로 보내야할지는 API를 만든 사람이 하라는대로 해야 하기 때문이죠.
+
+전체 정보나 상세 정보는 아래와 같이 path variable 로 url을 작성하면 되네요.
+
+Plural routes
+GET /posts
+GET /posts/1
+
+그리고 filter와 같은 기능을 위해서 GET 요청을 하고자할 때는 query로 보내라고 명시하고 있습니다.
+
+Filter
+use.to access deep properties
+GET /posts?title=json-server&author=typicode
+GET /posts?id=1&id=2
+GET /comments?author.name=typicode
+
+(3) 코드로 알아보기
+실용적인 예시를 코드를 통해 사용방법을 알아봅니다. 
+우리가 만든 json-server에 있는 todos를 axios를 이용해서 fetching하고 useState를 통해서 관리하는 로직입니다. 
+
+// src/App.js
+
+import React, { useEffect, useState } from "react";
+import axios from "axios"; // axios import 합니다.
+
+const App = () => {
+    const [todos, setTodos] = useState(null);
+
+        // axios를 통해서 get 요청을 하는 함수를 생성합니다.
+        // 비동기처리를 해야하므로 async/await 구문을 통해서 처리합니다.
+    const fetchTodos = async () => {
+        const { data } = await axios.get("http://localhost:3001/todos");
+        setTodos(data); // 서버로부터 fetching한 데이터를 useState의 state로 set 합니다.
+    };
+        
+        // 생성한 함수를 컴포넌트가 mount 됐을 떄 실행하기 위해 useEffect를 사용합니다.
+    useEffect(() => {
+            // effect 구문에 생성한 함수를 넣어 실행합니다.
+        fetchTodos();
+    }, []);
+
+        // data fetching이 정상적으로 되었는지 콘솔을 통해 확인합니다.
+    console.log(todos); // App.js:16
+    return <div>App</div>;
+    };
+
+export default App;
+
+🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹
+
+🧶 POST
+(1) Axios POST
+axios.post(url[, data[, config]])   // POST
+
+post는 보통 서버에 데이터를 추가할 때 사용합니다. 
+다만 post 요청에 대한 로직은 BE 개발자가 구현하는 것이기 때문에 추가외에 다른 용도로 사용될 수 있지만, 
+보통은 클라이언트의 데이터를 body형태로 서버에 보내고자 할 때 사용합니다. 
+
+(2) 코드로 알아보기
+**`GET` 코드예시에서  `POST` 코드가 추가됩니다.**
+
+**아래 코드를 설명합니다.**
+
+- 화면에 인풋과 버튼이 있고, 인풋에 어떤 값을 넣고 버튼을 클릭했을 때 `onSubmitHandler` 이 실행됩니다.
+- `onSubmitHandler` 함수의 목적은 todo를 body에 담아 서버로 POST 요청을 보내는 것 입니다
+
+// src/App.jsx
+
+import React, { useEffect, useState } from "react";
+import axios from "axios"; // axios import 합니다.
+
+const App = () => {
+        새롭게 생성하는 todo를 관리하는 state
+    const [todo, setTodo] = useState({
+        title: "",
+    });
+
+    const [todos, setTodos] = useState(null);
+
+    const fetchTodos = async () => {
+        const { data } = await axios.get("http://localhost:3001/todos");
+        setTodos(data);
+    };
+
+    const onSubmitHandler = (todo) => {
+        axios.post("http://localhost:3001/todos", todo);
+    };
+
+    useEffect(() => {
+        fetchTodos();
+    }, []);
+
+    return (
+        <>
+        <form
+            onSubmit={(e) => {
+                        // 👇 submit했을 때 브라우저의 새로고침을 방지합니다. 
+            e.preventDefault();
+            onSubmitHandler(todo);
+            }}
+        >
+            <input
+            type="text"
+            onChange={(ev) => {
+                const { value } = ev.target;
+                setTodo({
+                ...todo,
+                title: value,
+                });
+            }}
+            />
+            <button>추가하기</button>
+        </form>
+        <div>
+            {todos?.map((todo) => (
+            <div key={todo.id}>{todo.title}</div>
+            ))}
+        </div>
+        </>
+    );
+};
+
+export default App;
+
+POST 요청을 성공적으로 마쳤으면, 브라우저를 새로고침해보세요. 
+우리가 새롭게 추가한 Todo가 화면에 보일 것 입니다. 
+새로고침을 해야만 새로운 정보가 표시되는 이유가 뭘까요? 
+어떻게 해야 새로고침 없이 화면이 업데이트 될지 고민해보세요. 
+여러분들은 이미 구현해본 경험이 있습니다.
+
+
+(3) 네트워크탭 확인하기 [중요 🔥🔥🔥🔥]
+
+우리가 post 요청을 보냈을 때, 브라우저의 네트워크 탭에는 어떤 로그가 생기는지 확인해봅니다. 
+네트워크 쪽 개발을 할 때는 항상 브라우저에 있는 네트워크 탭을 확인하면서 개발을 진행해야 합니다. 
+어떤 문제가 생겼을 때 이정보를 통해 디버깅을 할 수 있기 때문입니다.
+
+    1) Headers
+=======================================================================================
+    /Headers/     Payload     Priview     Response        Initiator       Timing      
+---------------------------------------------------------------------------------------
+
+    Request URL: http://localhost:3001/todos
+    Requst Method: POST
+    Status Code: 🟢201 created
+    Remote Address: 127.0.0.1:3001
+    Referrer Policy: strict-origin-when-cross-origin
+
+
+- **Request URL**을 통해서 우리가 의도한 URL로 post 요청을 보냈음을 알 수 있습니다.
+- Request Method를 통해서 우리가 `POST` 메서드를 사용했음을 알 수 있습니다.
+- Status Code를 통해서 201 코드를 받았고, 정상적으로 네트워크가 이루어졌음을 알 수 있습니다. 
+    status code는 자동으로 생성되는 것이 아니라 BE개발자가 직접 개발을 하고 설정한 code가 브라우저에게 보이게 됩니다.
+    그래서 만약 BE개발자가 구현을 해놓지 않았다면 문맥과 다른 status code가 브라우저에 보일 수 있습니다.
+- 그 밖에도 `request headers`와 `response headers` 정보가 추가적으로 있습니다. 
+    이 부분은 각 항목들이 어떤 것을 우리게 보여주는지 더 알아보시길 바랍니다.
+
+
+
+    2) Payload
+=======================================================================================
+    Headers     /Payload/     Priview     Response        Initiator       Timing      
+---------------------------------------------------------------------------------------
+🔻Request Payload   view source
+    🔻{title: "post 테스트"}
+        title: "post 테스트"
+
+- payload에서는 우리가 보낸 body를 확인 할 수 있습니다. 
+
+🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹
+
+🧶 DELETE
+
+1) Axios delete : DELETE는 저장되어 있는 데이터를 삭제하고자 요청을 보낼 때 사용합니다.
+    axios.delete(url[, config])  // DELETE
+
+2) 코드로 알아보기
+GET, POST 와 함께 코드가 작성됩니다. onClickDeleteButtonHandler 와 map 을 돌린 항목별로 삭제하기 버튼을 추가해줍니다
+
+// src/App.jsx
+
+import React, { useEffect, useState } from "react";
+import axios from "axios"; 
+
+const App = () => {
+    const [todo, setTodo] = useState({
+        title: "",
+    });
+
+    const [todos, setTodos] = useState(null);
+
+    const fetchTodos = async () => {
+        const { data } = await axios.get("http://localhost:3001/todos");
+        setTodos(data); 
+    };
+
+    const onSubmitHandler = (todo) => {
+        axios.post("http://localhost:3001/todos", todo);
+    };
+
+        // 새롭게 추가한 삭제 버튼 이벤트 핸들러 
+    "const onClickDeleteButtonHandler = (todoId) => {
+        axios.delete(`http://localhost:3001/todos/${todoId}`);
+    };"
+
+    useEffect(() => {
+        fetchTodos();
+    }, []);
+
+    return (
+        <>
+        <form
+            onSubmit={(e) => {
+            e.preventDefault();
+            onSubmitHandler(todo);
+            }}
+        >
+            <input
+            type="text"
+            onChange={(ev) => {
+                const { value } = ev.target;
+                setTodo({
+                ...todo,
+                title: value,
+                });
+            }}
+            />
+            <button>추가하기</button>
+        </form>
+        <div>
+            {todos?.map((todo) => (
+            <div key={todo.id}>
+                {todo.title}
+                {/*  디자인이 요상하긴 하지만..! 삭제 버튼 추가 */}
+                "<button
+                type="button"
+                onClick={() => onClickDeleteButtonHandler(todo.id)}
+                >
+                삭제하기
+                </button>
+            </div>
+            ))}
+        </div>
+        </>"
+    );
+    };
+
+export default App;
+
+
+
+
+🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹
+
+🧶 PATCH
+
+1) Axios patch
+patch는 보통 어떤 데이터를 수정하고자 서버에 요청을 보낼 때 사용하는 메서드 입니다. 
+다만, 이것은 http 환경에서 서로가 한 약속이자 문맥이기 때문에, 
+수정을 하고자 반드시 patch, put 을 써야만 하는 것은 아닙니다. 
+BE에 의해서 POST를 통해서 "수정" 이라는 기능은 충분히 만들 수 있기 때문이죠. 
+다만 이러한 약속들을 대부분의 개발자들이 지키고 있다는 점을 알려드리고 싶습니다.
+
+    axios.patch(url[, data[, config]])  // PATCH
+
+
+2) 코드로 알아보기
+    
+`GET`, `POST`, `DELETE` 예제에 코드가 추가됩니다. **put은 patch와 동일한 원리이기때문에 생략합니다.**
+
+Todo를 수정하기 위해 필요한 데이터는 2개가 있습니다. 
+수정하고자하는 Todo의 id, 그리고 수정하고자 하는 값입니다. 
+수정하고자 하는 값은 기존에 있던 todo라는 state를 사용하면 될 것이고, 
+id는 직접 입력을 해서 url로 넘겨주는 방식으로 구현하겠습니다.
+
+보통은 수정기능을 만들 때 직접 id를 입력받아 처리는 방식은 거의 없습니다. 
+다만, 이번 예시에서는 아주 간단한 코드로 기능을 구현하는 것이기때문에 위와 같이 처리하겠습니다.
+
+
+// src/App.jsx
+
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const App = () => {
+    const [todo, setTodo] = useState({
+        title: "",
+    });
+    const [todos, setTodos] = useState(null);
+
+    "// patch에서 사용할 id, 수정값의 state를 추가
+    const [targetId, setTargetId] = useState(null);
+    const [editTodo, setEditTodo] = useState({
+        title: "",
+    });"
+
+    const fetchTodos = async () => {
+        const { data } = await axios.get("http://localhost:3001/todos");
+        setTodos(data);
+    };
+
+    const onSubmitHandler = (todo) => {
+        axios.post("http://localhost:3001/todos", todo);
+    };
+
+    const onClickDeleteButtonHandler = (todoId) => {
+        axios.delete(`http://localhost:3001/todos/${todoId}`);
+    };
+
+    "// 수정버튼 이벤트 핸들러 추가 👇
+    const onClickEditButtonHandler = (todoId, edit) => {
+        axios.patch(`http://localhost:3001/todos/${todoId}`, edit);
+    };"
+
+    useEffect(() => {
+        fetchTodos();
+    }, []);
+
+    return (
+        <>
+        <form
+            onSubmit={(e) => {
+            e.preventDefault();
+            onSubmitHandler(todo);
+            }}
+        >
+            "{/* 👇 수정기능에 필요한 id, 수정값 input2개와 수정하기 버튼을 추가 */}
+            <div>
+            <input
+                type="text"
+                placeholder="수정하고싶은 Todo ID"
+                onChange={(ev) => {
+                setTargetId(ev.target.value);
+                }}
+            />
+            <input
+                type="text"
+                placeholder="수정값 입력"
+                onChange={(ev) => {
+                setEditTodo({
+                    ...editTodo,
+                    title: ev.target.value,
+                });
+                }}
+            />
+            <button
+                            // type='button' 을 추가해야 form의 영향에서 벗어남
+                type="button"
+                onClick={() => onClickEditButtonHandler(targetId, editTodo)}
+            >
+                수정하기
+            </button>"
+            </div>
+            <input
+            type="text"
+            onChange={(ev) => {
+                const { value } = ev.target;
+                setTodo({
+                ...todo,
+                title: value,
+                });
+            }}
+            />
+            <button>추가하기</button>
+        </form>
+        <div>
+            {todos?.map((todo) => (
+            <div key={todo.id}>
+                "{/* todo의 아이디를 화면에 표시 */}
+                {todo.id} :{todo.title}"
+                <button
+                type="button"
+                onClick={() => onClickDeleteButtonHandler(todo.id)}
+                >
+                삭제하기
+                </button>
+            </div>
+            ))}
+        </div>
+        </>
+    );
+    };
+
+export default App;
+
+
+
+3) 네트워크 탭 확인하기
+
+POST  에서 확인한 것과 같이 PATCH 요청에서도 어떤 로그가 보이는지 네트워크탭을 확인해보세요. 
+
+
+
+🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹 - 🔹
+
+🧶 .env
+.env  란 무엇이고 왜 사용하며 어떻게 사용해야할까?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

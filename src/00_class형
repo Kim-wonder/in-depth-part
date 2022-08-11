@@ -1,0 +1,311 @@
+
+Component_class형
+
+class App extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            list: ['영화관 가기', '매일 책읽기', '수영 배우기'],
+        };
+    }
+    render() {
+        return (
+        <div className="App">
+            <h1>내 버킷리스트</h1>
+            {/* 컴포넌트를 넣어줍니다. */}
+            <BucketList/>
+        </div>
+        );
+    }
+}
+export default App;
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+Component에서 Component로 데이터를 넘겨주자
+
+클래스형 컴포넌트에서 자식 컴포넌트에 props를 넘겨줄 때는 아래와 같이 넘겨줍니다
+
+render() {
+    # // this 키워드를 통해 state에 접근할 수 있어요.
+    console.log(this.state);
+    return (
+        <div className="App">
+            <h1>내 버킷리스트</h1>
+            # {/* 컴포넌트를 넣어줍니다. */}
+            # {/* <컴포넌트 명 [props 명]={넘겨줄 것(리스트, 문자열, 숫자, ...)}/> */}
+            <BucketList list={this.state.list}/>
+        </div>
+    );
+}
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+> 컴포넌트의 라이프 사이클
+
+리액트 컴포넌트의 생명주기.
+컴포넌트는 <생성> -> <수정(업데이트)> -> <제거> 의 사이클을 가진다.
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+> 클래스형 컴포넌트에서 컴포넌트를 다루는 메소드
+
+
+생성(initialization)
+1. constructor
+    생성자함수 : 컴포넌트가 생성되면 가장먼저 호출되는 함수
+2. render()
+    렌더 : 컴포넌트의 모양을 정의하는 함수
+    state, props에 접근해서 데이터를 보여줄 수 있음
+    리액트 요소를 return()안에 넣어 반환해줌
+    컴포넌트 모양에만 관여하는 것이 좋음
+    state나 props를 건드려 데이터를 수정하려고 하면 안됨    
+
+
+화면표시(mounting)
+3. componentDidMount()
+    mount한다 : 화면에 그려준다
+    DidMount : 화면에 그려주는걸 완료했다! 즉, 컴포넌트가 화면에 나타나는걸 의미한다
+    첫번째 렌더링을 마친후에 딱 한번 실행됨
+    컴포넌트가 리렌더링 할때는 실행되지 않음
+    AJAX 요청, 이벤트, 함수호출, DOM처리(가상DOM에 올라간 이후이므로!)
+    지금말고 이전 state도 볼 수 있다. 그래서 이전 데이터와 비교하고 싶을때 쓰임.
+
+
+수정(updation)
+4. componentDidUpdate (prevProps, prevState, snapshot)
+    DidUpdate : 리렌더링을 완료한 후 실행되는 함수임.
+    prevState, preveProps : 업데이트되기전의 state와 props로, 이전데이터와 비교할때 가져다 쓰면 됨
+    가상DOM이 실제DOM으로 올라간 이후이므로 DOM관련 처리를 해도됨.
+
+
+화면해제(unmounting)
+5. componentWillUnmount()
+    마운트를제거한다 : 마운트 이후 해제작업을 해주는 함수
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+
+어떤 인풋박스에서 텍스트를 가져오고 싶으면, 어떻게 접근해야 할까?
+render()가 끝나고? mount가 끝나고? 아니면 그 전에 가상DOM에서? 아니면 DOM에서?
+
+정답은 리액트요소에서 가져온다!
+
+
+
+🍎 React.createRef()를 이용해서 text값 가져오기
+
+class App extends React.Component{
+    constructor(props) {
+    
+            super(props);
+            
+            # //App 컴포넌트의 state를 정의해줌
+            this.state = {
+                list:['영화관가기', '매일책읽기', '수영배우기']
+            }
+            
+            # //ref는 이렇게 선언함
+            this.text = React.createRef();
+            
+            componentDidMount(){
+            # //콘솔에서 확인하기
+            console.log(this.text);
+            console.log(this.text.current);
+            }
+
+        # //랜더 함수 안에 리액트 엘리먼트를 넣어주기!
+        render(){
+            return(
+                <div className = "App">
+                <div>
+                    <BucketList list = {this.state.list} />
+                </div>
+                <div>
+                    <input type="text" ref={this.text}/>
+                </div>
+                </div>
+            )
+        }
+    }
+}            
+export default App;
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+🍊 state 관리
+
+setState() : class형 컴포넌트에서 State 관리
+
+import React from 'react';
+
+class App extends React.Component{
+
+//생성자 함수
+  constructor(props){
+    //super로 this.state 쓸수있게만듬
+    super(props);
+    
+    //state로 객체조건을 만들어줌
+    this.state = {
+      count: 3,
+    };
+  }
+
+//마운팅
+  componentDidMount() {}
+
+ //Nemo의 count를 변경해주는 함수생성
+  //addNemo라는 함수는 state의 count값을 +1 변경해줌
+  addNemo = () => {
+  
+    // state에 한개씩 더해줌
+    this.setState({count: this.state.count +1})
+  }
+
+  //removeNemo라는 함수는 state의 count값을 -1 변경해줌
+  removeNemo = () => {
+  
+    //네모 갯수가 0보다 작을 순 없으니, if문으로 경고창을 띄어준다
+    if(this.state.count > 0){
+      this.setState({count: this.state.count -1})
+    }else{
+      window.alert('네모가 없어요!')
+    }
+  }
+
+//랜더함수
+render(){
+  //count의 갯수nemo_count를 배열로 만들어주기
+  //Array.from()의 첫번째 파라미터로 {length:원하는길이} 객체를,
+  //두번째 파라미터로 원하는 값을 반환하는 콜백함수를 넘겨줌
+  const nemo_count = Array.from({length:this.state.count}, (v, i) => (i))
+  console.log(nemo_count);
+
+
+
+//리턴함수 : 뷰를 그려줌, 컴포넌트앨리먼트요소
+return(
+        <div className="App">
+        
+        //nemo_count함수의 
+          {nemo_count.map((num, idx)=>{
+            return(
+              <div 
+                key={idx}
+                style={{
+                width:'150px',
+                height:'150px',
+                backgroundColor:'#eee',
+                margin:'10px'
+              }}>
+                nemo
+              </div>
+            );
+          })}
+          <button onClick={this.addNemo}>하나추가</button>
+          <button onClick={this.removeNemo}>하나빼기</button>
+        </div>
+      )
+    }
+  } 
+  
+export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

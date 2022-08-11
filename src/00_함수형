@@ -1,0 +1,179 @@
+Component_함수형
+
+
+import React from 'react'; 
+
+function Bucketlist(props){
+    return (
+        <div>버킷 리스트</div>
+    );
+}
+
+
+또는
+function Arrow
+const BucketList = (props) => {
+        return (
+        <div>
+            버킷 리스트
+        </div>
+    );
+}
+
+export default BucketList;
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+컴포넌트 불러오기(App.js)
+
+import React from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+
+import BucketList from './BucketList';
+function App() {
+  return (
+    <div className="App">
+        <h1>내 버킷리스트</h1>
+        <BucketList/>
+    </div>
+  );
+}
+export default App;
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+🍎 React.createRef()를 이용해서 text값 가져오기
+
+import React from "react";
+import styled from "styled-components";
+
+
+const BucketList = ({ list }) => {
+
+    const my_lists = list;
+    const my_wrap = React.useRef(null);
+
+    window.setTimeout(() => { // 1초 뒤에는?!
+    console.log(my_wrap);
+}, 1000);
+
+    return (
+        <div ref={my_wrap}>
+        {my_lists.map((list, index) => {
+            return 
+                <ItemStyle key={index}>
+        	    {list}
+                </ItemStyle>;
+            }
+        )}
+        </div>
+    );
+};
+
+
+const ItemStyle = styled.div`
+    padding: 16px;
+    margin: 8px;
+    background-color: aliceblue;
+`;
+
+export default BucketList;  
+
+⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️-⭐️
+
+🍊 state 관리
+
+useState() : 함수형 컴포넌트에서 state관리
+
+import React from "react";
+
+//Nemo함수로 컴포넌트 만들기
+const Nemo = (props) => {
+  // count에는 state 값이, setCount는 count라는 state 값을 수정하는 함수가 될거예요.
+  // useState(초기값): () 안에 초기값을 넣어줍니다.
+    const [count, setCount] = React.useState(3);
+
+
+    const addNemo = () => {
+      // setCount를 통해 count에 저장된 값을 + 1 해줍니다.
+        setCount(count + 1);
+    };
+
+    const removeNemo = () => {
+      // setCount를 통해 count에 저장된 값을 - 1 해줍니다.
+      // 이번엔 if문 대신 삼항 연산자로 해볼거예요!
+        setCount(count > 0 ? count - 1 : 0);
+    };
+
+    const nemo_count = Array.from({ length:count }, (v,i) => i);
+  //반환할 리액트 요소가 없을 때는 null을 넘기기!
+return(
+    	    <div
+                key={idx}
+                style={{
+                    width:'150px',
+                    height:'150px',
+                    backgroundColor:'#ddd'
+                    margin:'10px'
+                    }}
+	        >
+            nemo
+            </div>
+            
+            <div>
+                <button onClick={addNemo}>하나 추가</button>
+                <button onClick={removeNemo}>하나 빼기</button>
+            </div>
+export default Nemo;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
